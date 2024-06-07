@@ -1,0 +1,9 @@
+[
+    {
+        "imageLink": "https://cdn.freecodecamp.org/curriculum/cat-photo-app/relaxing-cat.jpg",
+        "prompt": "What is the capital of France?",
+        "userRequested": "John Smith",
+        "dateGenerated": "2021-01-01",
+        "uuid": "1234"
+    }
+]

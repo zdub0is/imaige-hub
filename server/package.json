@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch ./",
+    "dev": "nodemon --watch ./*.ts",
     "start": "ts-node index.ts",
     "build": "tsc -p tsconfig.json"
   },
@@ -13,7 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/static": "^7.0.4",
-    "fastify": "^4.27.0"
+    "dotenv": "^16.4.5",
+    "fastify": "^4.27.0",
+    "fastify-piscina": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",

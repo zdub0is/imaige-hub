@@ -13,5 +13,8 @@
     "huggingface"
   ],
   "author": "Zeke DuBois and Martin Martinez",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "fastify-piscina": "^5.0.0"
+  }
 }

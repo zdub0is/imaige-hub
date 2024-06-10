@@ -1,7 +1,7 @@
 
 import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions } from 'fastify';
 import fastifyPiscina from 'fastify-piscina';
-const { resolve } = require('path');
+import { resolve } from 'path';
 
 type imageParams = {
     imageName: string;
@@ -20,13 +20,10 @@ export const generateImagesRoute: FastifyPluginAsync = async (server: FastifyIns
     server.get<{ Params: imageParams }>('/:imagePrompt', function (req, res) {
 
         server.runTask({}).then((res) => {
-            console.log(res)
+                console.log(res)
+                // If success insert image information into database
             }
         )
-        // server.runTask({ a: 3, b: 2 }).then((res) => {
-        //     console.log(res)
-        // }
-        // )
     })
 
 };

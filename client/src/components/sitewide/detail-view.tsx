@@ -22,7 +22,7 @@ export default function DetailView({ imageObj, open, setOpen }: DetailViewProps)
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 hidden bg-gray-600 bg-opacity-75 transition-opacity md:block" />
+                    <div className="fixed inset-0 hidden bg-gray-700 bg-opacity-75 transition-opacity md:block" />
                 </TransitionChild>
 
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">

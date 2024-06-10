@@ -12,12 +12,60 @@ import {
 import { Bars3Icon, BellIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import PromptModal from '../user/prompt-modal'
+import NotificationsDrawer from '../user/notifications'
 
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
+  { name: 'Gallery', href: '#', current: true },
+  { name: 'Requests', href: '#', current: false },
+
+]
+
+export type Notification = {
+  time: number
+  title: string
+  message: string
+  href: string
+  type: string
+  urgent: boolean
+  read: boolean
+}
+const SampleNotifications: Notification[] = [
+  {
+      time: new Date().setHours(new Date().getHours() - 1),
+      title: 'New message',
+      message: 'You have a new message from Jane Doe.',
+      href: '#',
+      type: 'message',
+      urgent: false,
+      read: false,
+  },
+  {
+      time: new Date().setDate(new Date().getDate() - 1),
+      title: 'Sales report',
+      message: 'Your store’s sales report is ready for download.',
+      href: '#',
+      type: 'report',
+      urgent: false,
+      read: true,
+  },
+  {
+      time: new Date().setDate(new Date().getDate() - 3),
+      title: 'New customer',
+      message: 'You have a new customer.',
+      href: '#',
+      type: 'customer',
+      urgent: true,
+      read: false,
+  },
+  {
+      time: new Date().setDate(new Date().getDate() - 7),
+      title: 'New feature',
+      message: 'You have a new feature request.',
+      href: '#',
+      type: 'feature',
+      urgent: true,
+      read: true,
+  },
 ]
 
 function classNames(...classes) {
@@ -25,7 +73,8 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const [open, setOpen] = useState<boolean>(false)
+  const [openPrompt, setOpenPrompt] = useState<boolean>(false)
+  const [openNotifications, setOpenNotifications] = useState<boolean>(false)
   return (
     <>
     
@@ -48,13 +97,6 @@ export default function Navbar() {
                 </DisclosureButton>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
-                  <img
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=rose&shade=500"
-                    alt="Your Company"
-                  />
-                </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
@@ -75,17 +117,20 @@ export default function Navbar() {
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0 justify-between">
                 {/* Prompt request button */}
-                <button className="bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 flex items-center mr-3" onClick={() => setOpen(true)}>
+                <button className="bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 flex items-center mr-3" onClick={() => setOpenPrompt(true)}>
                   <SparklesIcon className="h-6 w-6" aria-hidden="true" />
                   <span className="ml-2">Request Image</span>
                 </button>
                 <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={() => setOpenNotifications(true)}
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  {SampleNotifications.length > 0 && <div
+    className="absolute bottom-auto left-auto right-0 top-0 z-10 inline-block translate-x-1/6 -translate-y-2/5 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 rounded-full bg-rose-600 text-gray-50 font-bold p-1.5 text-[11px]"/>}
+                  <BellIcon className="h-6 w-6" aria-hidden="true"></BellIcon>
                 </button>
 
                 {/* Profile dropdown */}
@@ -99,6 +144,7 @@ export default function Navbar() {
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt=""
                       />
+                      
                     </MenuButton>
                   </div>
                   <Transition
@@ -169,7 +215,8 @@ export default function Navbar() {
       )}
       
     </Disclosure>
-    <PromptModal open={open} setOpen={setOpen} />
+    <PromptModal open={openPrompt} setOpen={setOpenPrompt} />
+    <NotificationsDrawer open={openNotifications} setOpen={setOpenNotifications} notifications={SampleNotifications} />
     </>
   )
 }

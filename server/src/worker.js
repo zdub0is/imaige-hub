@@ -7,7 +7,7 @@ const fs = require("fs");
 require('dotenv').config();
 
 async function query(data) {
-    console.log(JSON.stringify(data));
+	console.log(JSON.stringify(data));
 	const response = await fetch(
 		"https://api-inference.huggingface.co/models/Corcelio/mobius",
 		{
@@ -16,27 +16,27 @@ async function query(data) {
 			body: JSON.stringify(data),
 		}
 	);
-    console.log(response.status);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+	console.log(response.status);
+	if (!response.ok) {
+		throw new Error(`HTTP error! status: ${response.status}`);
+	}
 	const result = await response.blob();
 	return result;
 }
 
-module.exports =  async function main() {
+module.exports = async function main(prompt) {
 
-let image = await query({"inputs": "A monkey wearing sequins"}).then((response) => {
-    // response is a blob, need it to be ready for writeFileSync
-    return response.arrayBuffer();
+	let image = await query({ "inputs": prompt }).then((response) => {
+		// response is a blob, need it to be ready for writeFileSync
+		return response.arrayBuffer();
 
-});
+	});
 
-// convert the array buffer to a Buffer
-image = Buffer.from(image);
+	// convert the array buffer to a Buffer
+	image = Buffer.from(image);
 
 
-fs.writeFileSync("image2.jpg", image);
+	fs.writeFileSync(`${prompt}.jpg`, image);
 }
 
 // main();

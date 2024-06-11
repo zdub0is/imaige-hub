@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import mongo from "@fastify/mongodb";
 import dotenv from "dotenv";
 dotenv.config();
@@ -11,10 +11,16 @@ import { authenticationRoute } from './routes/auths/authentication';
 import verfiyJwt from "./auth/jwtPlugin"
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
+import { FastifyInstance } from 'fastify';
 
-const server = fastify({
+interface Server extends FastifyInstance {
+	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
+}
+
+const server: Server = fastify({
 	// logger: true
 });
+
 
 server.register(fastifyCookie, {
 	secret: process.env.COOKIE_SECRET
@@ -38,20 +44,19 @@ server.register(usersRoute, {prefix: "user"})
 
 
 // Declare a route  
-// @ts-ignore
 server.get('/secret', {onRequest: server.authenticate}, async (request, reply) => {
 	reply.send("Hello")
 });
 server.get('/', async (request, reply) => {
 	reply.send("Hello")
 });
-
 // Run the server!  
-server.listen({ port: 8030 }, function (err, address) {
+server.listen({ port: 8800 }, function (err, address) {
 	if (err) {
-		server.log.error(err)
+		console.log("run")
+		console.log(err)
 		process.exit(1)
 	}
-
+	
 	console.log(`Server is now listening on ${address}`)
 })

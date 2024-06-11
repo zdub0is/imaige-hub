@@ -2,17 +2,19 @@ import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions, FastifyReply
 import Fastifyjwt from "@fastify/jwt";
 import fp from 'fastify-plugin';
 
+import { VerifyPayloadType } from "@fastify/jwt";
 
-const verfiyJwt: FastifyPluginAsync = async function(server: FastifyInstance, opts: FastifyPluginOptions) {
+const verifyJwt: FastifyPluginAsync = async function(server: FastifyInstance, opts: FastifyPluginOptions) {
   
-   server.decorate("authenticate", async function(req: FastifyRequest, reply: FastifyReply): Promise<any> {
+   server.decorate("authenticate", async function(req: FastifyRequest, reply: FastifyReply): Promise<void> {
       try {
-        await req.jwtVerify()
+        await req.jwtVerify();
+        // Get data from JWT
       } catch (err) {
-        reply.send(err)
+        reply.send(err);
       }
     })
   }
 
-  export default fp(verfiyJwt);
+  export default fp(verifyJwt);
 

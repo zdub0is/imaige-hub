@@ -9,7 +9,7 @@ type imageParams = {
 
 
 const imageServerOpts = {
-    root: path.join(__dirname, '../../images'),
+    root: path.join(__dirname, '../../../images'),
     prefix: '/',
 }
 
@@ -17,11 +17,17 @@ export const getImagesRoute: FastifyPluginAsync = async (server: FastifyInstance
     server.register(fastifyStatic, imageServerOpts)
     
     
-    server.get<{ Params: imageParams }>('img/:imageName', function (req, res) {
+    server.get<{ Params: imageParams }>('/:imageName', function (req, res) {
         const imageName = req.params.imageName;
-        console.log(imageServerOpts.root)
 
         res.sendFile(`/${imageName}.jpg`);
+    });
+
+    
+
+    server.get('/', function (req, res) {
+        console.log("endpoint works")
+
     })
 
 };

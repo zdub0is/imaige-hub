@@ -17,10 +17,10 @@ export const generateImagesRoute: FastifyPluginAsync = async (server: FastifyIns
     
 
     // Change to post later
-    server.post('/', function (req: FastifyRequest<{ Body: {prompt: string} }>, res) {
+    server.get('/', function (req: FastifyRequest<{ Body: {prompt: string} }>, res) {
         const prompt: {prompt: string} = req.body;
 
-        server.runTask(prompt).then((res) => {
+        server.runTask("Future Metropolis City").then((res) => {
                 console.log(res)
                 // If success insert image information into database
             }

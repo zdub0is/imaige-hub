@@ -18,7 +18,8 @@ async function query(data) {
 	);
 	console.log(response.status);
 	if (!response.ok) {
-		throw new Error(`HTTP error! status: ${response.status}`);
+		// throw new Error(`HTTP error! status: ${response.status}`);
+		console.log(`HTTP error! status: ${response.status}`);
 	}
 	const result = await response.blob();
 	return result;

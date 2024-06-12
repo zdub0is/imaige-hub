@@ -3,6 +3,7 @@ import mongo from "@fastify/mongodb";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { startQueue } from './queue/startQueue';
 import { testRoute } from './routes/test/test';
 import { getImagesRoute } from './routes/images/serveImage';
 import { generateImagesRoute } from './routes/images/generateImage';
@@ -12,6 +13,21 @@ import verfiyJwt from "./auth/jwtPlugin"
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
 import { FastifyInstance } from 'fastify';
+import { Queue } from 'bullmq';
+
+
+const queue = startQueue();
+
+async function addJobs(queue: Queue<any, any, string>) {
+	await queue.add('myJobName', { inputs: ' A room to buy spells, elixir\'s from. Like the image for the store but with only bottles and no weapons. Maybe a cauldron in the room too.' });
+	// await queue.add('myJobName', { qux: 'baz' });
+}
+
+(async function () {
+
+	await addJobs(queue)
+}
+)();
 
 interface Server extends FastifyInstance {
 	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
@@ -31,20 +47,20 @@ server.register(fastifyJwt, {
 })
 
 verfiyJwt(server, {})
-server.register(mongo,{
+server.register(mongo, {
 	forceClose: true,
 	url: process.env.MONGO_URL
 });
 
-server.register(authenticationRoute, {prefix: "auth"});
+server.register(authenticationRoute, { prefix: "auth" });
 server.register(testRoute, { prefix: "test" });
 server.register(getImagesRoute, { prefix: "img" });
 server.register(generateImagesRoute, { prefix: "generate" });
-server.register(usersRoute, {prefix: "user"})
+server.register(usersRoute, { prefix: "user" })
 
 
 // Declare a route  
-server.get('/secret', {onRequest: server.authenticate}, async (request, reply) => {
+server.get('/secret', { onRequest: server.authenticate }, async (request, reply) => {
 	reply.send("Hello")
 });
 server.get('/', async (request, reply) => {
@@ -57,6 +73,6 @@ server.listen({ port: 8800 }, function (err, address) {
 		console.log(err)
 		process.exit(1)
 	}
-	
+
 	console.log(`Server is now listening on ${address}`)
 })

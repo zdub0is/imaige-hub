@@ -6,6 +6,7 @@ dotenv.config();
 import { startQueue } from './queue/startQueue';
 import { testRoute } from './routes/test/test';
 import { getImagesRoute } from './routes/images/serveImage';
+import { galleryRoute } from './routes/images/image';
 import { generateImagesRoute } from './routes/images/generateImage';
 import { usersRoute } from './routes/users/users';
 import { authenticationRoute } from './routes/auths/authentication';
@@ -18,16 +19,16 @@ import { Queue } from 'bullmq';
 
 const queue = startQueue();
 
-async function addJobs(queue: Queue<any, any, string>) {
-	await queue.add('myJobName', { inputs: ' A room to buy spells, elixir\'s from. Like the image for the store but with only bottles and no weapons. Maybe a cauldron in the room too.' });
-	// await queue.add('myJobName', { qux: 'baz' });
-}
+// async function addJobs(queue: Queue<any, any, string>) {
+// 	await queue.add('myJobName', { inputs: ' A room to buy spells, elixir\'s from. Like the image for the store but with only bottles and no weapons. Maybe a cauldron in the room too.' });
+// 	// await queue.add('myJobName', { qux: 'baz' });
+// }
 
-(async function () {
+// (async function () {
 
-	await addJobs(queue)
-}
-)();
+// 	await addJobs(queue)
+// }
+// )();
 
 interface Server extends FastifyInstance {
 	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
@@ -54,7 +55,9 @@ server.register(mongo, {
 
 server.register(authenticationRoute, { prefix: "auth" });
 server.register(testRoute, { prefix: "test" });
+// Rename this one
 server.register(getImagesRoute, { prefix: "img" });
+server.register(galleryRoute, { prefix: "gallery" });
 server.register(generateImagesRoute, { prefix: "generate" });
 server.register(usersRoute, { prefix: "user" })
 

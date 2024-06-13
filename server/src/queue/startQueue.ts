@@ -1,10 +1,10 @@
 import { Queue, Worker, Job } from "bullmq";
-import fs from "fs";
+import fs, { stat } from "fs";
 
 
 async function generateImageJob(prompt: string) {
 
-    async function query(data:{inputs: string}) {
+    async function query(data: { inputs: string }) {
 
         const response = await fetch(
             "https://api-inference.huggingface.co/models/Corcelio/mobius",
@@ -20,20 +20,25 @@ async function generateImageJob(prompt: string) {
             console.log(`HTTP error! status: ${response.status}`);
         }
         const result = await response.blob();
-        return result;
+        return { status: response.status, result: result };
     }
 
     async function main(prompt: string) {
 
+        let status;
+
         let image = await query({ "inputs": prompt }).then((response) => {
             // response is a blob, need it to be ready for writeFileSync
-            return response.arrayBuffer();
+            status = response.status;
+            return response.result.arrayBuffer();
 
         });
 
-        
+        if (status !== 200) {
+            throw new Error(`Job failed with status ${status}`);
+        }
         // convert the array buffer to a Buffer
-        
+
         image = Buffer.from(image);
         // convert image to string | ArrayBufferView type
 
@@ -41,7 +46,13 @@ async function generateImageJob(prompt: string) {
         fs.writeFileSync(`${prompt}.jpg`, image);
     }
 
-    await main(prompt);
+    try{
+
+        await main(prompt);
+    }
+    catch (error: any) {
+        throw error; // Rethrow the error so BullMQ knows this job failed
+    }
 }
 
 export function startQueue() {
@@ -55,12 +66,15 @@ export function startQueue() {
 
     const myQueue = new Queue("image-generation", connection);
 
-    // const imageGenWorker = new Worker("image-generation", async (job) => {
-    //     console.log(job.data)
-    // }, connection);
-    
     const imageGenWorker = new Worker("image-generation", async (job) => {
-        generateImageJob(job.data.inputs);
+        try {
+
+            await generateImageJob(job.data.inputs);
+        }
+        catch (error: any) {
+            console.error(`Job ${job.id} failed with error ${error.message}`);
+            throw error; // Rethrow the error so BullMQ knows this job failed
+        }
     }, connection);
 
     imageGenWorker.on("completed", job => {

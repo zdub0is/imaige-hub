@@ -1,10 +1,16 @@
 import { Queue, Worker, Job } from "bullmq";
-import fs, { stat } from "fs";
+import fs from "fs";
+import { server } from "..";
+import { image } from "../models/image";
+import { generateLink } from "../utils/generateLink";
+
+let queue: Queue | null = null;
 
 
-async function generateImageJob(prompt: string) {
+async function generateImageJob(prompt: string, link:string) {
 
     async function query(data: { inputs: string }) {
+        console.log("data: ", data)
 
         const response = await fetch(
             "https://api-inference.huggingface.co/models/Corcelio/mobius",
@@ -23,7 +29,11 @@ async function generateImageJob(prompt: string) {
         return { status: response.status, result: result };
     }
 
-    async function main(prompt: string) {
+    async function main(prompt: string, filename: string = "") {
+
+        if(filename == ""){
+            filename = prompt;
+        }
 
         let status;
 
@@ -43,19 +53,23 @@ async function generateImageJob(prompt: string) {
         // convert image to string | ArrayBufferView type
 
         // @ts-ignore
-        fs.writeFileSync(`${prompt}.jpg`, image);
+        fs.writeFileSync(`${filename}.jpg`, image);
     }
 
-    try{
+    try {
 
-        await main(prompt);
+        await main(prompt, link);
     }
     catch (error: any) {
         throw error; // Rethrow the error so BullMQ knows this job failed
     }
 }
 
-export function startQueue() {
+export function getQueue() {
+
+    if (queue != null) {
+        return queue
+    }
 
     const connection = {
         connection: {
@@ -68,8 +82,8 @@ export function startQueue() {
 
     const imageGenWorker = new Worker("image-generation", async (job) => {
         try {
-
-            await generateImageJob(job.data.inputs);
+            job.data.link = generateLink();
+            await generateImageJob(job.data.prompt, job.data.link);
         }
         catch (error: any) {
             console.error(`Job ${job.id} failed with error ${error.message}`);
@@ -77,8 +91,13 @@ export function startQueue() {
         }
     }, connection);
 
-    imageGenWorker.on("completed", job => {
-        console.log(`${job.id} has completed!`);
+    imageGenWorker.on("completed", async job => {
+        /*
+            link: string;
+        */
+        const imageData: image = { ...job.data, isDeleted: false, timeGenerated: Date.now()}
+        const images = server.mongo.db?.collection('images');
+        await images?.insertOne(imageData);
 
     })
 

@@ -1,8 +1,7 @@
+
 import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
-import Fastifyjwt from "@fastify/jwt";
 import fp from 'fastify-plugin';
 
-import { VerifyPayloadType } from "@fastify/jwt";
 
 const verifyJwt: FastifyPluginAsync = async function(server: FastifyInstance, opts: FastifyPluginOptions) {
   

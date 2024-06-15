@@ -1,23 +1,25 @@
+
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import mongo from "@fastify/mongodb";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { startQueue } from './queue/startQueue';
+import { getQueue } from './queue/startQueue';
 import { testRoute } from './routes/test/test';
 import { getImagesRoute } from './routes/images/serveImage';
 import { galleryRoute } from './routes/images/image';
 import { generateImagesRoute } from './routes/images/generateImage';
 import { usersRoute } from './routes/users/users';
+import { promptRoute } from './routes/prompts/prompt';
 import { authenticationRoute } from './routes/auths/authentication';
+
 import verfiyJwt from "./auth/jwtPlugin"
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
 import { FastifyInstance } from 'fastify';
-import { Queue } from 'bullmq';
 
 
-const queue = startQueue();
+const queue = getQueue();
 
 // async function addJobs(queue: Queue<any, any, string>) {
 // 	await queue.add('myJobName', { inputs: ' A room to buy spells, elixir\'s from. Like the image for the store but with only bottles and no weapons. Maybe a cauldron in the room too.' });
@@ -34,7 +36,7 @@ interface Server extends FastifyInstance {
 	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
 }
 
-const server: Server = fastify({
+export const server: Server = fastify({
 	// logger: true
 });
 
@@ -58,6 +60,7 @@ server.register(testRoute, { prefix: "test" });
 // Rename this one
 server.register(getImagesRoute, { prefix: "img" });
 server.register(galleryRoute, { prefix: "gallery" });
+server.register(promptRoute, { prefix: "prompt" });
 server.register(generateImagesRoute, { prefix: "generate" });
 server.register(usersRoute, { prefix: "user" })
 

@@ -30,17 +30,22 @@ export const server: Server = fastify({
 	// logger: true
 });
 
-server.register(cors,{
-	origin: "*"
+server.register(cors, {
+	origin: process.env.CLIENT_URL
 })
 
 
 server.register(fastifyCookie, {
-	secret: process.env.COOKIE_SECRET
+	secret: process.env.COOKIE_SECRET,
 })
 
 server.register(fastifyJwt, {
-	secret: process.env.JWT_SECRET as string
+	secret: process.env.JWT_SECRET as string,
+	decode: { complete: true },
+	cookie: {
+		cookieName: 'token',
+		signed: false
+	}
 })
 
 verfiyJwt(server, {})

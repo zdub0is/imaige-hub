@@ -1,14 +1,17 @@
 
 import {image} from "../../models/image";
-import { FastifyPluginAsync, FastifyPluginOptions, FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
 import { FastifyInstance } from "fastify/types/instance";
+interface Server extends FastifyInstance {
+	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
+}
 
-export const galleryRoute: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
+export const galleryRoute: FastifyPluginAsync = async (server: Server, options: FastifyPluginOptions) => {
     
     const images = server.mongo.db?.collection('images');
 
     // Add pagination later
-    server.get('/', async function (req, reply) {
+    server.get('/', { onRequest: server.authenticate }, async function (req, reply) {
 
         const imagesArray = await images?.find({ isApproved: true, isDeleted: false }).toArray();
 

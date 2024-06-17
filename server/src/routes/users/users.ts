@@ -1,5 +1,6 @@
 
 import { FastifyPluginAsync, FastifyInstance, FastifyPluginOptions } from "fastify";
+import { UserRoles } from "../../models/roles";
 
 export const usersRoute: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
     
@@ -18,7 +19,26 @@ export const usersRoute: FastifyPluginAsync = async (server: FastifyInstance, op
     server.post('/', function (req, reply) {
         const newUser = req.body as Document;
 
-        users?.insertOne(newUser).then(res => {
+        //user 
+        // {
+        // These will be from the form
+        //     name: string;
+        //     username: string;
+        //     password: string;
+        // These will be inserted here
+        //     role: string;
+        //     notificationsEnabled: boolean;
+        //     isBanned: boolean;
+        // }
+
+        const defaultUserOptions = {
+            role: UserRoles.STUDENT,
+            notificationsEnabled: true,
+            isBanned: false,
+        }
+
+
+        users?.insertOne({...newUser, ...defaultUserOptions}).then(res => {
             if(res.insertedId){
 
                 reply.status(200).send();

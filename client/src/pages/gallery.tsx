@@ -15,7 +15,11 @@ export default function Gallery(){
     });
 
     useEffect(() => {
-     fetch(import.meta.env.VITE_BASE_URL+"/gallery",{method: "GET"})
+     fetch(import.meta.env.VITE_BASE_URL+"/gallery",{
+      method: "GET",
+    
+      credentials: 'include',
+    })
      .then(res => res)
      .then(data => {
         return data.json()
@@ -40,9 +44,15 @@ export default function Gallery(){
             <h2 className="sr-only">Products</h2>
     
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-              {gallery?.map((product) => (
-                <ImageCard imageObj={product} handleOpenSlideover={(link) => handleOpenSlideover(link)} />
-              ))}
+              {
+                gallery?
+
+                  gallery?.map((product) => (
+                    <ImageCard imageObj={product} handleOpenSlideover={(link) => handleOpenSlideover(link)} />
+                  ))
+                  :""
+                }
+            
             </div>
           </div>
         </div>

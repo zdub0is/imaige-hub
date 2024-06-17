@@ -1,67 +1,20 @@
 import { Queue, Worker, Job } from "bullmq";
-import fs from "fs";
 import { server } from "..";
 import { image } from "../models/image";
 import { generateLink } from "../utils/generateLink";
-
+import { generateImageDallE } from "../utils/generateImageDallE";
 let queue: Queue | null = null;
 
 
 async function generateImageJob(prompt: string, link:string) {
 
-    async function query(data: { inputs: string }) {
-        console.log("data: ", data)
-
-        const response = await fetch(
-            "https://api-inference.huggingface.co/models/Corcelio/mobius",
-            {
-                headers: { Authorization: `Bearer ${process.env.API_KEY}` },
-                method: "POST",
-                body: JSON.stringify(data.inputs),
-            }
-        );
-
-        console.log(response.status);
-        if (!response.ok) {
-            console.log(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.blob();
-        return { status: response.status, result: result };
-    }
-
-    async function main(prompt: string, filename: string = "") {
-
-        if(filename == ""){
-            filename = prompt;
-        }
-
-        let status;
-
-        let image = await query({ "inputs": prompt }).then((response) => {
-            // response is a blob, need it to be ready for writeFileSync
-            status = response.status;
-            return response.result.arrayBuffer();
-
-        });
-
-        if (status !== 200) {
-            throw new Error(`Job failed with status ${status}`);
-        }
-        // convert the array buffer to a Buffer
-
-        image = Buffer.from(image);
-        // convert image to string | ArrayBufferView type
-
-        // @ts-ignore
-        fs.writeFileSync(`${filename}.jpg`, image);
-    }
-
     try {
 
-        await main(prompt, link);
+        await generateImageDallE(prompt, link);
     }
     catch (error: any) {
-        throw error; // Rethrow the error so BullMQ knows this job failed
+        // Rethrow the error so BullMQ knows this job failed
+        throw error; 
     }
 }
 
@@ -71,14 +24,21 @@ export function getQueue() {
         return queue
     }
 
-    const connection = {
+    const options = {
         connection: {
             host: process.env.REDIS_HOST,
             port: parseInt(process.env.REDIS_PORT as string)
-        }
+        },
+        defaultJobOptions: {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 1000,
+            },
+          },
     }
 
-    const myQueue = new Queue("image-generation", connection);
+    const myQueue = new Queue("image-generation", options);
 
     const imageGenWorker = new Worker("image-generation", async (job) => {
         try {
@@ -89,7 +49,7 @@ export function getQueue() {
             console.error(`Job ${job.id} failed with error ${error.message}`);
             throw error; // Rethrow the error so BullMQ knows this job failed
         }
-    }, connection);
+    }, options);
 
     imageGenWorker.on("completed", async job => {
         /*

@@ -9,8 +9,26 @@ type DetailViewProps = {
     setOpen: (open: boolean) => void;
 }
 
+async function handleDownload(link: string, filename: string) {
+    try {
+        fetch(import.meta.env.VITE_BASE_URL + "/img/" + link, {})
+            .then(res => res.blob())
+            .then(blob => {
+                const file = window.URL.createObjectURL(blob);
+                const anchorEl = document.createElement('a');
+                anchorEl.href = file;
+                anchorEl.setAttribute('download', filename+".jpg");
+                document.body.appendChild(anchorEl);
+                anchorEl.click();
+                anchorEl.remove();
+            })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export default function DetailView({ imageObj, open, setOpen }: DetailViewProps) {
-    const { imageLink, prompt, userRequested, dateGenerated } = imageObj;
+    const { link, prompt, userRequested, timeGenerated } = imageObj;
     return (
         <Transition show={open}>
             <Dialog open={open} onClose={setOpen} className="relative z-10">
@@ -48,7 +66,7 @@ export default function DetailView({ imageObj, open, setOpen }: DetailViewProps)
 
                                     <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                                         <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                                            <img src={imageLink} alt={prompt} className="object-cover object-center" />
+                                            <img src={import.meta.env.VITE_BASE_URL + "/img/" + link} alt={prompt} className="object-cover object-center" />
                                         </div>
                                         <div className="sm:col-span-8 lg:col-span-7">
                                             <h2 className="text-3xl font-bold text-gray-50 sm:pr-12">{prompt}</h2>
@@ -64,7 +82,7 @@ export default function DetailView({ imageObj, open, setOpen }: DetailViewProps)
                                                     </div>
                                                     <div>
                                                         <dt className="text-sm font-medium text-gray-400">Generated on</dt>
-                                                        <dd className="text-sm font-semibold text-gray-50">{dateGenerated}</dd>
+                                                        <dd className="text-sm font-semibold text-gray-50">{(new Date(timeGenerated)).toDateString()}</dd>
                                                     </div>
                                                 </dl>
 
@@ -74,13 +92,13 @@ export default function DetailView({ imageObj, open, setOpen }: DetailViewProps)
                                             <div className="absolute bottom-4 right-4">
                                                 <button
                                                     type="button"
+                                                    onClick={() => handleDownload(link, prompt)}
                                                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-50 bg-green-500 border border-transparent rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                                 >
                                                     <ArrowDownTrayIcon className="h-4 w-4 mr-2" aria-hidden="true" />
                                                     Download
                                                 </button>
-                                             </div>   
-
+                                            </div>
 
                                         </div>
                                     </div>

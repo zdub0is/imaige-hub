@@ -9,6 +9,7 @@ type imageParams = {
 
 export const generateImagesRoute: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
 
+    // Here just to test sending a image generation job manually
     server.register(fastifyPiscina, {
         // Piscina Options object. See Piscina docs for details
         filename: resolve(__dirname, '../../worker.js'),
@@ -16,7 +17,6 @@ export const generateImagesRoute: FastifyPluginAsync = async (server: FastifyIns
     });
     
 
-    // Change to post later
     server.post('/', function (req: FastifyRequest<{ Body: {prompt: string} }>, res) {
         const prompt: {prompt: string} = req.body;
 

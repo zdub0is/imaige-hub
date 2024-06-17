@@ -1,20 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import json from '../assets/sample.json';
 import ImageCard, { ImageObj } from '../components/sitewide/image-card';
 import DetailView from '../components/sitewide/detail-view';
 
 export default function Gallery(){
+  const [gallery, setGallery] = useState<[ImageObj]>();
     const [open, setOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<ImageObj>({
-        imageLink: "",
+        link: "",
         prompt: "",
         userRequested: "",
-        dateGenerated: "",
+        timeGenerated: "",
         uuid: ""
     });
 
-    const handleOpenSlideover = (uuid: string) => {
-        const image = json.find((image) => image.uuid === uuid);
+    useEffect(() => {
+     fetch(import.meta.env.VITE_BASE_URL+"/gallery",{method: "GET"})
+     .then(res => res)
+     .then(data => {
+        return data.json()
+     }).then((data) => {
+      setGallery(data);
+     })
+
+
+
+    }, [])
+
+    const handleOpenSlideover = (link: string) => {
+        const image = gallery?.find((image) => image.link === link);
         if (!image) return;
         setSelectedImage(image);
         setOpen(true);
@@ -26,8 +40,8 @@ export default function Gallery(){
             <h2 className="sr-only">Products</h2>
     
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-              {json.map((product) => (
-                <ImageCard imageObj={product} handleOpenSlideover={(uuid) => handleOpenSlideover(uuid)} />
+              {gallery?.map((product) => (
+                <ImageCard imageObj={product} handleOpenSlideover={(link) => handleOpenSlideover(link)} />
               ))}
             </div>
           </div>

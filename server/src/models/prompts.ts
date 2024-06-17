@@ -3,3 +3,8 @@ export type prompt = {
 	isApproved: boolean;
 	userRequested: string;
 }
+
+export type promptRequest = {
+	prompt: string;
+	userRequested: string;
+}

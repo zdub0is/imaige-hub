@@ -1,6 +1,7 @@
 
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import mongo from "@fastify/mongodb";
+import cors from '@fastify/cors';
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -18,19 +19,8 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
 import { FastifyInstance } from 'fastify';
 
+getQueue();
 
-const queue = getQueue();
-
-// async function addJobs(queue: Queue<any, any, string>) {
-// 	await queue.add('myJobName', { inputs: ' A room to buy spells, elixir\'s from. Like the image for the store but with only bottles and no weapons. Maybe a cauldron in the room too.' });
-// 	// await queue.add('myJobName', { qux: 'baz' });
-// }
-
-// (async function () {
-
-// 	await addJobs(queue)
-// }
-// )();
 
 interface Server extends FastifyInstance {
 	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
@@ -39,6 +29,10 @@ interface Server extends FastifyInstance {
 export const server: Server = fastify({
 	// logger: true
 });
+
+server.register(cors,{
+	origin: "*"
+})
 
 
 server.register(fastifyCookie, {

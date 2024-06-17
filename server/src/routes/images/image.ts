@@ -1,4 +1,4 @@
-import fastifyStatic from "@fastify/static";
+
 import {image} from "../../models/image";
 import { FastifyPluginAsync, FastifyPluginOptions, FastifyRequest } from "fastify";
 import { FastifyInstance } from "fastify/types/instance";

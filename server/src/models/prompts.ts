@@ -4,7 +4,8 @@ export type prompt = {
 	userRequested: string;
 }
 
-export type promptRequest = {
+export interface promptRequest {
 	prompt: string;
 	userRequested: string;
 }
+

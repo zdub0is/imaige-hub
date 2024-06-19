@@ -8,7 +8,15 @@ const verifyJwt: FastifyPluginAsync = async function (server: FastifyInstance, o
   server.decorate("authenticate", async function (req: FastifyRequest, reply: FastifyReply): Promise<void> {
 
     try {
-      const res = await req.jwtVerify();
+      req.jwtVerify((err, decoded)=> {
+
+        if(err){
+          throw err
+        }
+        console.log(decoded)
+
+        req.requestContext.set("user" as never, decoded as never)
+      });
       // Get data from JWT
 
     } catch (err) {

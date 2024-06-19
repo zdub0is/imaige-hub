@@ -1,5 +1,6 @@
 
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
+import { fastifyRequestContext } from '@fastify/request-context';
 import mongo from "@fastify/mongodb";
 import cors from '@fastify/cors';
 import dotenv from "dotenv";
@@ -17,23 +18,30 @@ import { authenticationRoute } from './routes/auths/authentication';
 import verfiyJwt from "./auth/jwtPlugin"
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
-import { FastifyInstance } from 'fastify';
+
+
+declare module 'fastify' {
+    interface FastifyInstance { // you must reference the interface and not the type
+        authenticate: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
+    }
+}
 
 getQueue();
 
 
-interface Server extends FastifyInstance {
-	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
-}
-
-export const server: Server = fastify({
+export const server = fastify({
 	// logger: true
 });
 
 server.register(cors, {
 	origin: process.env.CLIENT_URL
-})
+});
 
+server.register(fastifyRequestContext, {
+	defaultStoreValues: {
+		user: {id: ""}
+	}
+})
 
 server.register(fastifyCookie, {
 	secret: process.env.COOKIE_SECRET,
@@ -65,9 +73,9 @@ server.register(usersRoute, { prefix: "user" })
 
 
 // Declare a route  
-server.get('/secret', { onRequest: server.authenticate }, async (request, reply) => {
-	reply.send("Hello")
-});
+// server.get('/secret', { onRequest: server.authenticate }, async (request, reply) => {
+// 	reply.send("Hello")
+// });
 server.get('/', async (request, reply) => {
 	reply.send("Hello")
 });

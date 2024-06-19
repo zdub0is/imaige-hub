@@ -1,12 +1,7 @@
 
-import {image} from "../../models/image";
-import { FastifyPluginAsync, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
-import { FastifyInstance } from "fastify/types/instance";
-interface Server extends FastifyInstance {
-	authenticate?: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
-}
+import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions, FastifyRequest } from "fastify";
 
-export const galleryRoute: FastifyPluginAsync = async (server: Server, options: FastifyPluginOptions) => {
+export const galleryRoute: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
     
     const images = server.mongo.db?.collection('images');
 
@@ -18,8 +13,8 @@ export const galleryRoute: FastifyPluginAsync = async (server: Server, options: 
         reply.send(imagesArray);
     });
 
-    server.post("/multi", async function(req: FastifyRequest<{ Body: [image]} >, reply){
-        const imageData = req.body;
+    server.post("/multi", { onRequest: server.authenticate }, async function(req: FastifyRequest, reply){
+        const imageData = req.body as [ImageData];
 
         images?.insertMany(imageData);
 

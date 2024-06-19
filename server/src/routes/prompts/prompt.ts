@@ -1,7 +1,8 @@
 
-import { FastifyPluginAsync, FastifyInstance, FastifyPluginOptions, FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
 import { prompt, promptRequest } from "../../models/prompts";
 import { getQueue } from "../../queue/startQueue";
+import { FastifyInstance,  } from "fastify/types/instance";
 
 export const promptRoute: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
 
@@ -25,10 +26,11 @@ export const promptRoute: FastifyPluginAsync = async (server: FastifyInstance, o
         }
     })
 
-    server.post('/', async function(req: FastifyRequest<{Body: promptRequest}>, reply){
-        const promptRequest: promptRequest = req.body;
+    
+    server.post<{ Body: promptRequest }>("/", { onRequest: server.authenticate }, async function(req: FastifyRequest<{Body: promptRequest}>, reply: FastifyReply){
+        const promptRequest = req.body;
 
-        prompts?.insertOne({...promptRequest, isApproved: false, timeRequested: Date.now()});
+        await prompts?.insertOne({...promptRequest, isApproved: false, timeRequested: Date.now()});
 
     })
 

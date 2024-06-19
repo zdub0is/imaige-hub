@@ -20,6 +20,9 @@ importers:
       '@fastify/mongodb':
         specifier: ^8.0.0
         version: 8.0.0
+      '@fastify/request-context':
+        specifier: ^5.1.0
+        version: 5.1.0
       '@fastify/static':
         specifier: ^7.0.4
         version: 7.0.4
@@ -100,6 +103,9 @@ packages:
 
   '@fastify/mongodb@8.0.0':
     resolution: {integrity: sha512-IDw/wWpdc53+Y5sPpMg+ek71HOIVuz8NoD2GlfIOcvGE/lYdrZvnFQxqJcaZtlwPZ7YflDDkIu5aNkCPWdZQ0Q==}
+
+  '@fastify/request-context@5.1.0':
+    resolution: {integrity: sha512-PM7wrLJOEylVDpxabOFLaYsdAiaa0lpDUcP2HMFJ1JzgiWuC6k4r3duf6Pm9YLnzlGmT+Yp4tkQjqsu7V/pSOA==}
 
   '@fastify/send@2.1.0':
     resolution: {integrity: sha512-yNYiY6sDkexoJR0D8IDy3aRP3+L4wdqCpvx5WP+VtEU58sn7USmKynBzDQex5X42Zzvw2gNzzYgP90UfWShLFA==}
@@ -1307,6 +1313,10 @@ snapshots:
       - mongodb-client-encryption
       - snappy
       - socks
+
+  '@fastify/request-context@5.1.0':
+    dependencies:
+      fastify-plugin: 4.5.1
 
   '@fastify/send@2.1.0':
     dependencies:

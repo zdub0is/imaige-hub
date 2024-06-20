@@ -13,6 +13,8 @@ export const authenticationRoute: FastifyPluginAsync = async (server: FastifyIns
     server.post('/signin', async function (req: FastifyRequest<{ Body: { password: string, username: string } }>, reply) {
         const loginAttempt: { password: string, username: string } = req.body;
 
+        console.log(loginAttempt)
+
         const userAuth = await auth?.findOne({ "username": loginAttempt.username });
 
         let res = bcrypt.compareSync(loginAttempt.password, userAuth?.password)
@@ -34,11 +36,33 @@ export const authenticationRoute: FastifyPluginAsync = async (server: FastifyIns
                 // sameSite: 'lax',
                 httpOnly: true
             });
+
+            reply.send({user: user?.username})
         }
         else{
             reply.status(403).send();
         }
 
+     
+    });
+
+    // signout
+    server.post('/signout', async function (req: FastifyRequest, reply) {
+      
+            const emptyToken = server.jwt.sign({});
+
+            // send jwt as httponly cookie
+            reply.setCookie("token", emptyToken, {
+                // domain: 'localhost',
+                path: '/',
+                // secure: true,
+                // sameSite: 'lax',
+                maxAge: 1,
+                httpOnly: true
+            });
+
+
+            reply.status(200);
      
     });
 

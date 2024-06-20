@@ -6,7 +6,7 @@ export const galleryRoute: FastifyPluginAsync = async (server: FastifyInstance, 
     const images = server.mongo.db?.collection('images');
 
     // Add pagination later
-    server.get('/', { onRequest: server.authenticate }, async function (req, reply) {
+    server.get('/', async function (req, reply) {
 
         const imagesArray = await images?.find({ isApproved: true, isDeleted: false }).toArray();
 

@@ -28,6 +28,7 @@ export const promptRoute: FastifyPluginAsync = async (server: FastifyInstance, o
 
     
     server.post<{ Body: promptRequest }>("/", { onRequest: server.authenticate }, async function(req: FastifyRequest<{Body: promptRequest}>, reply: FastifyReply){
+        console.log(req.requestContext.get("user"));
         const promptRequest = req.body;
 
         await prompts?.insertOne({...promptRequest, isApproved: false, timeRequested: Date.now()});

@@ -18,6 +18,7 @@ import { authenticationRoute } from './routes/auths/authentication';
 import verfiyJwt from "./auth/jwtPlugin"
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie"
+import { user } from './models/user';
 
 
 declare module 'fastify' {
@@ -25,6 +26,12 @@ declare module 'fastify' {
         authenticate: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
     }
 }
+
+declare module '@fastify/request-context' {
+	interface RequestContextData {
+	  user: user | null
+	}
+  }
 
 getQueue();
 
@@ -39,7 +46,7 @@ server.register(cors, {
 
 server.register(fastifyRequestContext, {
 	defaultStoreValues: {
-		user: {id: ""}
+		user: null
 	}
 })
 

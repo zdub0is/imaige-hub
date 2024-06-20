@@ -13,6 +13,8 @@ import { Bars3Icon, BellIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/2
 import { useEffect, useState } from 'react'
 import PromptModal from '../user/prompt-modal'
 import NotificationsDrawer from '../user/notifications'
+import { useAuth } from '../../context/authProvider/AuthProvider'
+import SigninModal from '../signin/signin-modal'
 
 const navigation = [
   { name: 'Gallery', href: '#', current: true },
@@ -73,32 +75,11 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const { isSignedIn, signout } = useAuth();
   const [openPrompt, setOpenPrompt] = useState<boolean>(false)
+  const [openSignin, setOpenSignin] = useState<boolean>(false)
   const [openNotifications, setOpenNotifications] = useState<boolean>(false)
 
-  async function toTestSigin() {
-
-    console.log("Ran")
-    await fetch(import.meta.env.VITE_BASE_URL + "/auth/signin",
-      {
-        method: "POST",
-        body: JSON.stringify({ username: "uz", password: "test" })
-
-      },)
-  }
-
-// useEffect(()=> {
-//   fetch(import.meta.env.VITE_BASE_URL + "/auth/signin",
-//     {
-//       method: "POST",
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({ username: "uz", password: "test" })
-
-//     },).then(res => alert("ran"))
-
-// }, [])
   return (
     <>
 
@@ -201,15 +182,28 @@ export default function Navbar() {
                           )}
                         </MenuItem>
                         <MenuItem>
-                          {({ focus }) => (
+                          {
+                          isSignedIn?
+                          ({ focus }) => (
                             <a
                               href="#"
                               className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                              onClick={toTestSigin}
+                              onClick={signout}
                             >
                               Sign out
                             </a>
-                          )}
+                          )
+                          :
+                          ({ focus }) => (
+                            <a
+                              href="#"
+                              className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              onClick={() => setOpenSignin(true)}
+                            >
+                              Sign In
+                            </a>
+                          )
+                        }
                         </MenuItem>
                       </MenuItems>
                     </Transition>
@@ -241,6 +235,7 @@ export default function Navbar() {
 
       </Disclosure>
       <PromptModal open={openPrompt} setOpen={setOpenPrompt} />
+      <SigninModal open={openSignin} setOpen={setOpenSignin}/>
       <NotificationsDrawer open={openNotifications} setOpen={setOpenNotifications} notifications={SampleNotifications} />
     </>
   )

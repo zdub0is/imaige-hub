@@ -13,8 +13,6 @@ export const authenticationRoute: FastifyPluginAsync = async (server: FastifyIns
     server.post('/signin', async function (req: FastifyRequest<{ Body: { password: string, username: string } }>, reply) {
         const loginAttempt: { password: string, username: string } = req.body;
 
-        console.log(loginAttempt)
-
         const userAuth = await auth?.findOne({ "username": loginAttempt.username });
 
         let res = bcrypt.compareSync(loginAttempt.password, userAuth?.password)

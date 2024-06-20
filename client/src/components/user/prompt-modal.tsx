@@ -6,6 +6,16 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
     const [isUrgent, setIsUrgent] = useState<boolean>(false)
     const [isRevision, setIsRevision] = useState<boolean>(false)
     const [acknowledged, setAcknowledged] = useState<boolean>(false)
+    const [promptInput, setPromptInput] = useState("");
+
+    function handleSubmitPrompt(e: React.MouseEvent<HTMLButtonElement, MouseEvent>){
+        e.preventDefault();
+
+        // do fetch call
+        
+
+        return
+    }
 
     return (
         <Transition show={open}>
@@ -46,7 +56,16 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
                                                     {/* checkbox */}
                                                     <div className="mb-5">
                                                         {/* textarea */}
-                                                        <textarea id="prompt" name="prompt" className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-rose-500 focus:border-rose-500 sm:text-sm" placeholder="Please provide a prompt" cols={30} rows={5} />
+                                                        <textarea 
+                                                            id="prompt" 
+                                                            name="prompt" 
+                                                            value={promptInput}
+                                                            onChange={(e) => setPromptInput(e.target.value)}
+                                                            className="block w-full rounded-md border-gray-300 shadow-sm text-gray-700 focus:ring-rose-500 focus:border-rose-500 sm:text-sm" 
+                                                            placeholder="Please provide a prompt" 
+                                                            cols={30} 
+                                                            rows={5} 
+                                                        />
 
                                                     </div>
                                                     <div className="flex items-center">
@@ -87,7 +106,8 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
                                             <button
                                                 type="submit"
                                                 className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 disabled:opacity-50"
-                                                disabled={!acknowledged}
+                                                disabled={!acknowledged && promptInput.length > 20}
+                                                onClick={(e) => handleSubmitPrompt(e)}
                                             >
                                                 Submit
                                             </button>

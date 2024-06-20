@@ -4,6 +4,8 @@ import { useAuth } from '../../context/authProvider/AuthProvider';
 
 export default function SigninModal({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
     const { isSignedIn, signin, signout } = useAuth();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
 
     return (
@@ -49,14 +51,14 @@ export default function SigninModal({ open, setOpen }: { open: boolean; setOpen:
                                                     <div className="flex flex-col my-6">
 
                                                         <label htmlFor="username" className="ml-2 block text-base text-gray-50 text-left">Username </label>
-                                                        <input id="username" name="username" type="text" className="h-10 text-rose-600 focus:ring-rose-500 border-gray-300 rounded" onChange={() => { }} />
+                                                        <input id="username" name="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="h-10 text-gray-600 focus:ring-rose-500 border-gray-300 rounded" />
                                                     </div>
 
 
                                                     <div className="flex flex-col my-6">
 
                                                         <label htmlFor="username" className="ml-2 block text-base text-gray-50 text-left">Password </label>
-                                                        <input id="username" name="username" type="password" className="h-10 text-rose-600 focus:ring-rose-500 border-gray-300 rounded" onChange={() => { }} />
+                                                        <input id="username" name="username" type="password" value={password} onChange={(e) => setPassword(e.target.value)}className="h-10 text-gray-600 focus:ring-rose-500 border-gray-300 rounded" />
                                                     </div>
 
 
@@ -70,7 +72,15 @@ export default function SigninModal({ open, setOpen }: { open: boolean; setOpen:
                                                 <button
                                                     type="submit"
                                                     className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 disabled:opacity-50"
-                                                    onClick={signin}
+                                                    onClick={async () => {
+                                                        const success = await signin(username, password);
+                                                        console.log(success)
+                                                        if(success){
+                                                            setUsername("");
+                                                            setPassword("");
+                                                            setOpen(false);
+                                                        }
+                                                    }}
                                                 >
                                                     Signin
                                                 </button>

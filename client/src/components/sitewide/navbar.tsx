@@ -122,7 +122,7 @@ export default function Navbar() {
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0 justify-between">
                   {/* Prompt request button */}
-                  <button className="bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 flex items-center mr-3" onClick={() => setOpenPrompt(true)}>
+                  <button  disabled={!isSignedIn} className="bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 flex items-center mr-3" onClick={() => setOpenPrompt(true)}>
                     <SparklesIcon className="h-6 w-6" aria-hidden="true" />
                     <span className="ml-2">Request Image</span>
                   </button>

@@ -3,6 +3,7 @@ import { server } from "..";
 import { image } from "../models/image";
 import { generateLink } from "../utils/generateLink";
 import { generateImageDallE } from "../utils/generateImageDallE";
+import { ObjectId } from "@fastify/mongodb";
 let queue: Queue | null = null;
 
 
@@ -43,18 +44,24 @@ export function getQueue() {
     const imageGenWorker = new Worker("image-generation", async (job) => {
         try {
             job.data.link = generateLink();
+            console.log("Image generation started")
+            const notifications = server.mongo.db?.collection('notifications');
+            notifications?.updateOne(
+                {_id: new ObjectId(job.data.id)},
+                {$set: {isActive: false, isApproved: job.data.isApproved}}
+            )          
             await generateImageJob(job.data.prompt, job.data.link);
         }
         catch (error: any) {
+            console.log("Image generation errored")
             console.error(`Job ${job.id} failed with error ${error.message}`);
             throw error; // Rethrow the error so BullMQ knows this job failed
         }
     }, options);
 
     imageGenWorker.on("completed", async job => {
-        /*
-            link: string;
-        */
+       
+       console.log("Image generation completed")
         const imageData: image = { ...job.data, isDeleted: false, timeGenerated: Date.now()}
         const images = server.mongo.db?.collection('images');
         await images?.insertOne(imageData);

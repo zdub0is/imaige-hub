@@ -8,11 +8,36 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
     const [acknowledged, setAcknowledged] = useState<boolean>(false)
     const [promptInput, setPromptInput] = useState("");
 
-    function handleSubmitPrompt(e: React.MouseEvent<HTMLButtonElement, MouseEvent>){
+    async function handleSubmitPrompt(e: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         e.preventDefault();
+        // do fetch 
+        await fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "prompt": promptInput,
+                "userRequested": ""
+            }),
+            credentials: 'include',
+        })
+        .then(res => {
+            console.log("status: ", res.status)
+            if(res.status !== 200){
+                throw new Error("Access Denied")
+            }
+            return res
+        })
+        .then(data => {
+            return data.json()
+        }).then((data) => {
+          console.log(data)
 
-        // do fetch call
-        
+        }).catch(err => {
+
+            console.log(err)
+        })
 
         return
     }
@@ -106,7 +131,7 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
                                             <button
                                                 type="submit"
                                                 className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-rose-600 disabled:opacity-50"
-                                                disabled={!acknowledged && promptInput.length > 20}
+                                                disabled={!acknowledged || promptInput.length < 20}
                                                 onClick={(e) => handleSubmitPrompt(e)}
                                             >
                                                 Submit

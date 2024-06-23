@@ -1,4 +1,5 @@
 export type prompt = {
+	id: string;
 	prompt: string;
 	isApproved: boolean;
 	userRequested: string;

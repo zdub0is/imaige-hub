@@ -22,16 +22,19 @@ import { user } from './models/user';
 
 
 declare module 'fastify' {
-    interface FastifyInstance { // you must reference the interface and not the type
-        authenticate: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
-    }
+	interface FastifyInstance { // you must reference the interface and not the type
+		authenticate: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
+	}
 }
 
 declare module '@fastify/request-context' {
 	interface RequestContextData {
-	  user: user | null
+		user: {
+			user: user,
+			iat: number
+		} | null,
 	}
-  }
+}
 
 getQueue();
 
@@ -46,7 +49,7 @@ server.register(cors, {
 
 server.register(fastifyRequestContext, {
 	defaultStoreValues: {
-		user: null
+		user: null,
 	}
 })
 

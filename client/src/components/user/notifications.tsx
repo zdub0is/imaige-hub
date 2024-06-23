@@ -1,14 +1,83 @@
-import { Fragment, useState } from 'react'
+
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
-import { Notification } from '../sitewide/navbar'
+import Notification from '../Notification';
+import { useEffect, useState } from 'react';
+import { Notification as NotificationType} from '../sitewide/navbar';
+import { useAuth } from '../../context/authProvider/AuthProvider';
 
 TimeAgo.addDefaultLocale(en)
 
-export default function NotificationsDrawer({ open, setOpen, notifications }: { open: boolean; setOpen: (open: boolean) => void; notifications: Notification[]}) {
-    const ta = new TimeAgo('en-US')
+export default function NotificationsDrawer({ open, setOpen}: { open: boolean; setOpen: (open: boolean) => void; }) {
+    const [notifications, setNotifications] = useState<NotificationType[]>([]);
+    const {isSignedIn} = useAuth();
+
+    useEffect(() => {
+
+        if(isSignedIn){
+
+            fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
+                method: "GET",
+                credentials: 'include',
+            })
+            .then(res => {
+                console.log("status: ", res.status)
+                if(res.status !== 200){
+                    throw new Error("Access Denied")
+                }
+                return res
+            })
+            .then(data => {
+                return data.json()
+            }).then((data) => {
+              setNotifications(data);
+    
+            }).catch(err => {
+    
+                console.log(err)
+            })
+        }
+        else{
+            setNotifications([]);
+        }
+
+
+    }, [isSignedIn])
+
+    useEffect(() => {
+
+        if(isSignedIn){
+
+            fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
+                method: "GET",
+                credentials: 'include',
+            })
+            .then(res => {
+                console.log("status: ", res.status)
+                if(res.status !== 200){
+                    throw new Error("Access Denied")
+                }
+                return res
+            })
+            .then(data => {
+                return data.json()
+            }).then((data) => {
+                console.log(data)
+              setNotifications(data);
+    
+            }).catch(err => {
+    
+                console.log(err)
+            })
+        }
+        else{
+            setNotifications([]);
+        }
+
+
+    }, [])
     return (
         <Transition show={open}>
             <Dialog className="relative z-10" onClose={setOpen}>
@@ -55,45 +124,7 @@ export default function NotificationsDrawer({ open, setOpen, notifications }: { 
                                                 <div className="flow-root ">
                                                     <ul role="list" className="-my-6 divide-y divide-gray-400 border-b-[1px] border-gray-400">
                                                         {notifications.map((notification) => (
-                                                            <li key={notification.time} className={`pt-4 pb-3 px-4 flex ${notification.read ? 'bg-gray-800' : ''}`}>
-                                                                <div className="flex-shrink-0">
-                                                                    <div className={`h-10 w-10 flex items-center justify-center rounded-full ${notification.read ? 'bg-rose-200' : 'bg-rose-500'} sm:h-12 sm:w-12`}>
-                                                                        {/* Heroicon name: outline/chat-alt */}
-                                                                        <svg
-                                                                            className="h-6 w-6 text-white"
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                            aria-hidden="true"
-                                                                        >
-                                                                            <path
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                strokeWidth={2}
-                                                                                d="M12 3c-4.97 0-9 3.13-9 7v4c0 3.87 4.03 7 9 7s9-3.13 9-7v-4c0-3.87-4.03-7-9-7z"
-                                                                            />
-                                                                        </svg>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="ml-4 flex-1 flex flex-col sm:ml-6">
-                                                                    <div>
-                                                                        <div className="flex justify-between">
-                                                                            <DialogTitle className={`text-sm font-medium ${notification.read ? 'text-gray-300' :'text-gray-50'}`}>{notification.title}</DialogTitle>
-                                                                            <p className={`text-sm ${notification.read ? 'text-gray-400' :'text-gray-200'}`}>{ta.format(notification.time)}</p>
-                                                                        </div>
-                                                                        <p className={`mt-2 text-sm ${notification.read ? 'text-gray-400' :'text-gray-200'}`}>{notification.message}</p>
-                                                                    </div>
-                                                                    <div className="mt-1 flex justify-end space-x-2">
-                                                                        <a
-                                                                            href={notification.href}
-                                                                            className={`text-sm font-medium ${notification.read ? 'text-rose-300 hover:text-rose-200' :'text-rose-500 hover:text-rose-400'}`}
-                                                                        >
-                                                                            View
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </li>
+                                                            <Notification notification={notification} />
                                                         ))}
                                                     </ul>
                                                 </div>

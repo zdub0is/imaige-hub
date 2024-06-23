@@ -10,7 +10,7 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PromptModal from '../user/prompt-modal'
 import NotificationsDrawer from '../user/notifications'
 import { useAuth } from '../../context/authProvider/AuthProvider'
@@ -236,6 +236,7 @@ export default function Navbar() {
       </Disclosure>
       <PromptModal open={openPrompt} setOpen={setOpenPrompt} />
       <SigninModal open={openSignin} setOpen={setOpenSignin}/>
+      {/* possibly lazy load this */}
       <NotificationsDrawer open={openNotifications} setOpen={setOpenNotifications} notifications={SampleNotifications} />
     </>
   )

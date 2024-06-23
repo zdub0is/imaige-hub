@@ -25,7 +25,7 @@ export async function generateImageDallE(prompt: string, link: string) {
       const compressedBuffer = await sharp(buffer).jpeg({ quality: 70 }).toBuffer();
       // compressedBuffer.toString("base64");
 
-      fs.writeFile(link + ".jpg", compressedBuffer, function (err) {
+      fs.writeFile("./images/"+link + ".jpg", compressedBuffer, function (err) {
         console.log('File created.');
       });
     }

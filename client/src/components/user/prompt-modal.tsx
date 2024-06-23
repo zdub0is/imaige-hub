@@ -39,6 +39,8 @@ export default function PromptModal({ open, setOpen }: { open: boolean; setOpen:
             console.log(err)
         })
 
+        setOpen(false);
+
         return
     }
 

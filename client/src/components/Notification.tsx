@@ -1,6 +1,6 @@
 import { DialogTitle } from "@headlessui/react";
 import TimeAgo from "javascript-time-ago";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Notification({ notification }) {
     const ta = new TimeAgo('en-US');
@@ -38,12 +38,13 @@ export default function Notification({ notification }) {
                 return data.json()
             }).then((data) => {
                 console.log(data)
-                setIsActive(false);
 
             }).catch(err => {
 
                 console.log(err)
             })
+            setIsActive(false);
+
 
         return
     }

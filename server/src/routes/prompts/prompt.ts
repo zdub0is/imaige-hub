@@ -24,8 +24,6 @@ export const promptRoute: FastifyPluginAsync = async (server: FastifyInstance, o
             return;
         }
 
-
-
         if(prompt.isApproved == true && userContext.role == UserRoles.INSTRUCTOR){
             // Send to job queue
             const queue = getQueue();
@@ -79,7 +77,7 @@ export const promptRoute: FastifyPluginAsync = async (server: FastifyInstance, o
 
         if(userContext.role == UserRoles.INSTRUCTOR || userContext.role == UserRoles.ADMIN){
             // Get 50 most recent 
-            notices = await notifications?.find({$or: [{to: userContext.username}, {to: userContext.role}]}).limit(50).toArray();
+            notices = await notifications?.find({$or: [{to: userContext.username}, {to: userContext.role}]}).sort({"time": -1}).limit(50).toArray();
             
         }  
         else{

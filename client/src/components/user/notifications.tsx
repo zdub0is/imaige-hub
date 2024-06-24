@@ -4,47 +4,15 @@ import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 import Notification from '../Notification';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Notification as NotificationType} from '../sitewide/navbar';
 import { useAuth } from '../../context/authProvider/AuthProvider';
 
 TimeAgo.addDefaultLocale(en)
 
 export default function NotificationsDrawer({ open, setOpen}: { open: boolean; setOpen: (open: boolean) => void; }) {
-    const [notifications, setNotifications] = useState<NotificationType[]>([]);
+    const [notifications, setNotifications] = useState<ReactNode[]>([]);
     const {isSignedIn} = useAuth();
-
-    // useEffect(() => {
-
-    //     if(isSignedIn){
-
-    //         fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
-    //             method: "GET",
-    //             credentials: 'include',
-    //         })
-    //         .then(res => {
-    //             console.log("status: ", res.status)
-    //             if(res.status !== 200){
-    //                 throw new Error("Access Denied")
-    //             }
-    //             return res
-    //         })
-    //         .then(data => {
-    //             return data.json()
-    //         }).then((data) => {
-    //           setNotifications(data);
-    
-    //         }).catch(err => {
-    
-    //             console.log(err)
-    //         })
-    //     }
-    //     else{
-    //         setNotifications([]);
-    //     }
-
-
-    // }, [isSignedIn])
 
     useEffect(() => {
 
@@ -53,10 +21,10 @@ export default function NotificationsDrawer({ open, setOpen}: { open: boolean; s
 
     }, [, isSignedIn]);
 
-    function handleRefreshNotifications(){
+    async function handleRefreshNotifications(){
         if(isSignedIn){
 
-            fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
+            const data = await fetch(import.meta.env.VITE_BASE_URL + "prompt/", {
                 method: "GET",
                 credentials: 'include',
             })
@@ -70,13 +38,17 @@ export default function NotificationsDrawer({ open, setOpen}: { open: boolean; s
             .then(data => {
                 return data.json()
             }).then((data) => {
-                console.log(data)
-              setNotifications(data);
+                return data
     
             }).catch(err => {
     
                 console.log(err)
             })
+
+            setNotifications(data.map((notification) => (
+                <Notification key={notification.time} notification={notification} />
+            )));
+
         }
         else{
             setNotifications([]);
@@ -133,9 +105,9 @@ export default function NotificationsDrawer({ open, setOpen}: { open: boolean; s
                                             <div className="mt-6">
                                                 <div className="flow-root ">
                                                     <ul role="list" className="-my-6 divide-y divide-gray-400 border-b-[1px] border-gray-400">
-                                                        {notifications.map((notification) => (
-                                                            <Notification notification={notification} />
-                                                        ))}
+                                                        {
+                                                            notifications
+                                                        }
                                                     </ul>
                                                 </div>
                                             </div>

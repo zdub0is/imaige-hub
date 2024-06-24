@@ -3,6 +3,7 @@ import TimeAgo from "javascript-time-ago";
 import { useEffect, useState } from "react";
 
 export default function Notification({ notification }) {
+    console.log(notification.isActive)
     const ta = new TimeAgo('en-US');
     const [isApproved, setIsApproved] = useState(notification.isApproved);
     const [isActive, setIsActive] = useState(notification.isActive)
@@ -49,10 +50,11 @@ export default function Notification({ notification }) {
         return
     }
 
+    useEffect(()=>{}, [notification])
+
     function handleChangeIsApproved(e) {
         setIsApproved(e.target.checked)
     }
-    console.log(notification);
 
     return (
         <li key={notification.time} className={`pt-4 pb-3 px-4 flex ${!isActive ? 'bg-gray-800' : ''}`}>
